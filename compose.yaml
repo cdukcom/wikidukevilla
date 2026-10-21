@@ -1,0 +1,7 @@
+services:
+  wiki:
+    image: ghcr.io/cdukcom/wikidukevilla:latest
+    container_name: wikidukevilla
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8095:80"
