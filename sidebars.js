@@ -16,7 +16,6 @@ module.exports = {
       type: 'category',
       label: 'Facil IoT',
       items: ['facil-iot']
-    },
-    'architecture'
+    }
   ]
 };

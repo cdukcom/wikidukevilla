@@ -46,9 +46,14 @@ const config = {
         ]},
         { title: 'Company', items: [
           { label: 'duke-villa.com', href: 'https://duke-villa.com' }
+        ]},
+        { title: 'Contact', items: [
+          { label: 'sales@duke-villa.com', href: 'mailto:sales@duke-villa.com' },
+          { label: '+1 689 273 9943', href: 'tel:+16892739943' },
+          { label: 'Sheridan, Wyoming · USA', href: 'https://www.duke-villa.com/#contact' }
         ]}
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} DukeVilla. Official product documentation.`
+      copyright: `Copyright © ${new Date().getFullYear()} DukeVilla LLC. 1309 Coffeen Ave Ste 1200 · Sheridan, WY 82801 · USA.`
     }
   }
 };

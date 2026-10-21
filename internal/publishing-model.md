@@ -1,8 +1,3 @@
----
-title: Publishing model
-sidebar_position: 99
----
-
 # Publishing model
 
 GitHub is the source of truth for WikiDukeVilla. Production files must never be edited directly on the VPS.
