@@ -4,9 +4,9 @@ import Link from '@docusaurus/Link';
 import styles from './index.module.css';
 
 const products = [
-  { name: 'VPNdukevilla', text: 'Secure control plane for IPsec and VPN operations.', href: '/docs/vpndukevilla', status: 'Manual 1.0.4' },
-  { name: 'traDUKtor', text: 'Translation and integration tools engineered for operations.', href: '/docs/traduktor', status: 'Coming soon' },
-  { name: 'Facil IoT', text: 'Practical device management and IoT operations.', href: '/docs/facil-iot', status: 'Coming soon' }
+  { name: 'VPNdukevilla', logo: '/img/dukevilla-docs-card.png', logoClass: 'vpn', text: 'Secure control plane for IPsec and VPN operations.', href: '/docs/vpndukevilla', status: 'Manual 1.0.4' },
+  { name: 'traDUKtor', logo: '/img/traduktor-logo.png', logoClass: 'traduktor', text: 'Translation and integration tools engineered for operations.', href: '/docs/traduktor', status: 'Coming soon' },
+  { name: 'Facil IoT', logo: '/img/facil-iot-logo.png', logoClass: 'faciliot', text: 'Practical device management and IoT operations.', href: '/docs/facil-iot', status: 'Coming soon' }
 ];
 
 export default function Home() {
@@ -26,7 +26,12 @@ export default function Home() {
             <div className={styles.grid}>
               {products.map((product) => (
                 <Link className={styles.card} to={product.href} key={product.name}>
-                  <span>{product.status}</span>
+                  <div className={styles.cardTop}>
+                    <span>{product.status}</span>
+                    <div className={`${styles.logoFrame} ${styles[product.logoClass]}`}>
+                      <img src={product.logo} alt={`${product.name} logo`} />
+                    </div>
+                  </div>
                   <h2>{product.name}</h2>
                   <p>{product.text}</p>
                   <strong>Open documentation →</strong>
