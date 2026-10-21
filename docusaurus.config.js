@@ -1,7 +1,7 @@
 const config = {
   title: 'DukeVilla Documentation',
   tagline: 'Official product manuals and technical documentation',
-  favicon: 'img/favicon.png',
+  favicon: 'img/favicon.ico',
   url: 'https://wiki.duke-villa.com',
   baseUrl: '/',
   organizationName: 'cdukcom',

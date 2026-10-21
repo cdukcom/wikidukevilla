@@ -15,10 +15,18 @@ export default function Home() {
       <main>
         <section className={styles.hero}>
           <div className="container">
-            <span className={styles.eyebrow}>DUKEVILLA · DOCUMENTATION</span>
-            <h1>Engineering knowledge,<br />ready for the field.</h1>
-            <p>Official manuals, operating procedures, release information, and troubleshooting guidance for DukeVilla products.</p>
-            <Link className="button button--primary button--lg" to="/docs/">Explore documentation</Link>
+            <div className={styles.heroGrid}>
+              <div className={styles.heroCopy}>
+                <span className={styles.eyebrow}>DUKEVILLA · DOCUMENTATION</span>
+                <h1>Engineering knowledge,<br />ready for the field.</h1>
+                <p>Official manuals, operating procedures, release information, and troubleshooting guidance for DukeVilla products.</p>
+                <Link className="button button--primary button--lg" to="/docs/">Explore documentation</Link>
+              </div>
+              <div className={styles.corporateMark}>
+                <img src="/img/dukevilla-corporate-dark.png" alt="DukeVilla — Data Transmission & Signal Processing" />
+                <span>Official knowledge center</span>
+              </div>
+            </div>
           </div>
         </section>
         <section className={styles.products}>
