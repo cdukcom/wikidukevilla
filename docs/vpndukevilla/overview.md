@@ -2,15 +2,15 @@
 title: VPNdukevilla User Manual
 id: overview
 slug: /vpndukevilla
-sidebar_label: User Manual 1.0.4
+sidebar_label: User Manual 1.0.5
 sidebar_position: 1
-version: 1.0.4
+version: 1.0.5
 language: en
 product: VPNdukevilla
 classification: Product documentation
 ---
 
-[Download the official PDF manual](/downloads/vpndukevilla/VPNdukevilla_User_Manual_v1.0.4.pdf)
+[Download the official PDF manual](/downloads/vpndukevilla/VPNdukevilla_User_Manual_v1.0.5.pdf)
 
 ![VPNdukevilla interface example](assets/vpndukevilla-v1.0.4/figure-01.png)
 
@@ -22,8 +22,8 @@ Control plane for StrongSwan and WireGuard · User and operations guide
 
 | Publisher | DukeVilla |
 | --- | --- |
-| Document version | 1.0.4 |
-| Release date | October 19, 2026 |
+| Document version | 1.0.5 |
+| Release date | October 26, 2026 |
 | Classification | Product documentation |
 
 *Operations document. It contains no passwords, PSKs, SNMP community strings, or private keys.*
@@ -32,8 +32,8 @@ Control plane for StrongSwan and WireGuard · User and operations guide
 
 | Field | Contents |
 | --- | --- |
-| Purpose | Provide a reusable description of every menu, field, administrative workflow, execution mode, integration, diagnostic, backup, and maintenance function in VPNdukevilla 1.0.4. |
-| Version | 1.0.4 |
+| Purpose | Provide a reusable description of every menu, field, administrative workflow, execution mode, integration, diagnostic, backup, and maintenance function in VPNdukevilla 1.0.5. |
+| Version | 1.0.5 |
 | Status | Ready for release |
 | Publisher | DukeVilla |
 | Intended audience | VPN administrators and operators |
@@ -66,9 +66,9 @@ Control plane for StrongSwan and WireGuard · User and operations guide
 
 ## Description and scope
 
-VPNdukevilla is a web control interface for inventorying, generating, applying, and verifying VPN configurations. In version 1.0.4, StrongSwan is operational and WireGuard is prepared for a later release. This version adds managed Docker application integrations and a signed updater with backup and transactional rollback.
+VPNdukevilla is a web control interface for inventorying, generating, applying, and verifying VPN configurations. In version 1.0.5, StrongSwan is operational and WireGuard is prepared for a later release. This release supports both online and offline signed updates, provides automatic backup and transactional rollback, and exports a human-readable sanitized system radiography.
 
-| Capability | Version 1.0.4 |
+| Capability | Version 1.0.5 |
 | --- | --- |
 | Tunnel inventory | Yes |
 | StrongSwan / IKEv2 | Yes |
@@ -78,8 +78,8 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 | Events / CSV | Yes |
 | admin and view users | Yes |
 | Secret-free backup | Yes |
-| Sanitized system radiography | Yes |
-| Checking for updates | Signed channel: download, deliberate installation, health check, and automatic rollback |
+| Sanitized system radiography | Yes, human-readable plain text (`.txt`) |
+| Checking for updates | Signed online channel or signed offline `.vpnduke` package; deliberate installation, health check, and automatic rollback |
 | Automatic updates | Staged download; deliberate activation by an administrator |
 | Application integrations | LibreNMS, Facil IoT, and traDUKtor with automatic detection |
 
@@ -187,7 +187,7 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 | Field | Rule | Example |
 | --- | --- | --- |
 | Name | Unique, stable, lowercase letters and hyphens | ipsec-remote03 |
-| Engine | StrongSwan in production version 1.0.4 | StrongSwan |
+| Engine | StrongSwan in production version 1.0.5 | StrongSwan |
 | Local host | Public IP or gateway listening address | Address assigned to the server |
 | Local network | Local protected selector in CIDR notation | 10.254.100.1/32 |
 | Remote host | %any for peers with dynamic IP addresses | %any |
@@ -254,8 +254,9 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 | --- | --- | --- |
 | Execution mode | Selects DRY RUN or LIVE and requires Apply mode | Does not automatically apply tunnel configurations. |
 | Check latest version | Queries the official signed channel, compares versions, and allows a newer release to be downloaded and verified. | Does not replace the running service until an administrator confirms Install update. |
+| Choose update file | Uploads and verifies a signed `.vpnduke` package obtained from the DukeVilla firmware portal. It works without Internet access on the appliance. | Does not accept arbitrary archives and does not install the release automatically. |
 | Install update | Installs the previously downloaded signed package, creates a backup, recreates the console, and performs a health check. | Is unavailable without a valid package; if the health check fails, it automatically restores the previous version. |
-| System radiography | Downloads sanitized JSON containing service, network, resource, and tunnel health | Does not include secrets. |
+| System radiography | Downloads a human-readable `.txt` report containing service, network, resource, integration, and tunnel health. | Does not include passwords, PSKs, tokens, encryption keys, or full secret values. |
 | Download backup | Exports the inventory as portable JSON | Does not include PSKs, passwords, tokens, or keys. |
 | Load backup | Merges a backup into the current inventory | Does not generate PSKs; new tunnels remain disabled. |
 
@@ -335,6 +336,8 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 
 ## Updates
 
+VPNdukevilla supports two signed update paths. Use the online path when the appliance can reach the official DukeVilla release channel. Use the offline path when the appliance has no Internet access. Both paths perform the same cryptographic verification and require a separate, explicit installation confirmation.
+
 ### Checking for updates
 
 1. Select Check latest version.
@@ -353,14 +356,54 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 
 For the first field update, use a controlled maintenance window and retain administrative host access until verification is complete.
 
+### Updating an offline appliance from the browser
+
+1. From an Internet-connected workstation, open the official DukeVilla firmware portal.
+
+2. Download the `.vpnduke` package for the required immutable version. Keep the filename and extension unchanged.
+
+3. Sign in to the target VPNdukevilla appliance and open Maintenance.
+
+4. Under **Update from file**, select **Choose update file** and choose the downloaded `.vpnduke` package.
+
+5. Wait while the appliance uploads the package, validates its structure, verifies the SHA-256 digest and DukeVilla Ed25519 signature, loads the container image, and stages the release.
+
+6. Confirm that the displayed staged version is the expected version. No running service has changed yet.
+
+7. Download a configuration backup and system radiography.
+
+8. During the approved maintenance window, select **Install update** and confirm.
+
+9. After the console returns, verify the running version, LIVE or DRY RUN mode, agent status, integrations, tunnel inventory, and event log.
+
+| SECURITY | Only install `.vpnduke` packages obtained from the official DukeVilla firmware portal. The appliance rejects unsigned, altered, malformed, oversized, or incorrectly targeted packages. |
+| --- | --- |
+
+### One-time bootstrap from version 1.0.4
+
+Version 1.0.4 can use **Check latest version** when Internet access is available, but it does not yet contain the browser upload control. An offline 1.0.4 appliance therefore requires a one-time administrator-assisted update to 1.0.5 through approved host access. After 1.0.5 is installed, later signed `.vpnduke` packages can be uploaded directly from Maintenance without copying source code to the appliance.
+
+### System radiography
+
+1. Open Maintenance.
+
+2. Select **Download radiography**.
+
+3. Open the resulting `vpndukevilla-radiography-YYYY-MM-DD.txt` file in any text editor.
+
+4. Review the summary, service state, network information, resource use, integrations, and tunnel health before escalation.
+
+5. Attach the file to the support case only after confirming that the report corresponds to the affected appliance and time window.
+
 | Principle | Recommendation |
 | --- | --- |
-| Versioning | Use immutable tags such as 1.0.4; do not use latest in production. |
+| Versioning | Use immutable tags such as 1.0.5; do not use latest in production. |
 | Image | Distribute the container image; source code does not need to be copied to the customer host. |
 | Data | Keep /data persistent and backed up. |
 | Rollback | Retain the previous image and a database backup. |
 | Official channel | https://vpn.duke-villa.com/api/releases/latest |
-| Automation | Check latest version downloads and verifies; Install update deliberately activates the release with backup, health check, and rollback. |
+| Offline package | Signed `.vpnduke` file downloaded from the official DukeVilla firmware portal. |
+| Automation | Check latest version or Choose update file downloads/uploads and verifies; Install update deliberately activates the release with backup, health check, and rollback. |
 
 ## Operations and escalation
 

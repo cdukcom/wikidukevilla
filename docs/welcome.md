@@ -12,7 +12,7 @@ This site contains the official, version-controlled documentation for DukeVilla 
 
 | Product | Documentation status | Current manual |
 | --- | --- | --- |
-| VPNdukevilla | Published | [Version 1.0.4](vpndukevilla/overview.md) |
+| VPNdukevilla | Published | [Version 1.0.5](vpndukevilla/overview.md) |
 | traDUKtor | Coming soon | — |
 | Facil IoT | Coming soon | — |
 
