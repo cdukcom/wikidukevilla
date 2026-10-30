@@ -5,8 +5,8 @@ import styles from './index.module.css';
 
 const products = [
   { name: 'VPNdukevilla', logo: '/img/dukevilla-docs-card.png', logoClass: 'vpn', text: 'Secure control plane for IPsec and VPN operations.', href: '/docs/vpndukevilla', status: 'Manual 1.0.4' },
-  { name: 'traDUKtor', logo: '/img/traduktor-logo.png', logoClass: 'traduktor', text: 'Translation and integration tools engineered for operations.', href: '/docs/traduktor', status: 'Coming soon' },
-  { name: 'Facil IoT', logo: '/img/facil-iot-logo.png', logoClass: 'faciliot', text: 'Practical device management and IoT operations.', href: '/docs/facil-iot', status: 'Coming soon' }
+  { name: 'traDUKtor', logo: '/img/traduktor-logo.png', logoClass: 'traduktor', text: 'Translation and integration tools engineered for operations.', href: '/docs/traduktor', status: 'Live operational manual' },
+  { name: 'Fácil IoT', logo: '/img/facil-iot-logo.png', logoClass: 'faciliot', text: 'Practical device management and IoT operations.', href: '/docs/facil-iot', status: 'Live operational manual' }
 ];
 
 export default function Home() {

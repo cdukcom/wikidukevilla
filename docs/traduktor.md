@@ -2,22 +2,25 @@
 title: traDUKtor Lite manual
 slug: /traduktor
 sidebar_position: 3
-description: Complete operating manual for traDUKtor Lite 0.2.31.
+description: Complete operating manual for traDUKtor Lite 0.2.32.
+last_update:
+  date: 2026-10-30
+  author: DukeVilla
 ---
 
 # traDUKtor Lite operational manual
 
 ![traDUKtor logo](/img/traduktor-logo.png)
 
-**Current stable release:** `0.2.31`
+**Current stable release:** `0.2.32`
 
 **Reference hardware:** Olimex ESP32-POE-ISO-16MB-IND
-**Manual scope:** installation, Translation, MESH WiFi, configuration, maintenance, backup, recovery, and troubleshooting.
+**Manual scope:** installation, Translation, DVRCP, configuration, maintenance, backup, recovery, and troubleshooting.
 
-[Download the PDF manual](/downloads/traduktor/traDUKtor_Lite_Operational_Manual_0.2.31.pdf)
+**Living manual:** this online page is the current operational reference. It is updated in place.
 
 :::info Living manual
-This page is the current public manual. It is updated in place when validated behavior changes. The PDF records the stable release represented by this edition.
+Use this page for current procedures. Software releases link here; separate versioned manual copies are not maintained.
 :::
 
 ## Product overview
@@ -27,7 +30,7 @@ traDUKtor Lite is a site-local protocol translator and controlled device-utility
 Only one primary application runs at a time:
 
 - **Translation** runs up to five protocol-conversion lines.
-- **MESH WiFi** reserves the runtime for Fácil IoT orchestration and Terminal Unit management.
+- **DVRCP** reserves the runtime for Fácil IoT orchestration and Terminal Unit management.
 
 Changing mode preserves the inactive application's saved configuration but stops its runtime services.
 
@@ -41,9 +44,9 @@ Sign in with an individual administrator account. Replace the default credential
 
 | Area | Views | Purpose |
 | --- | --- | --- |
-| Dashboard | System Status, Lines, MESH WiFi, Mgmt & VPN | Live operational evidence |
+| Dashboard | System Status, Lines, DVRCP, Mgmt & VPN | Live operational evidence |
 | Translation | Protocols, Lines | Operating mode, profiles, and protocol flows |
-| MESH WiFi | Status and operating mode | Fácil IoT coordination and Terminal Units |
+| DVRCP | Status and operating mode | Fácil IoT coordination and Terminal Units |
 | Configuration | System, Network, Users, MQTT management | Persistent appliance settings |
 | Maintenance | Firmware and files, Tools, Backup and files | Lifecycle, diagnostics, and recovery |
 
@@ -63,16 +66,16 @@ An unavailable or stopped value is never inferred. A green badge confirms only t
 
 This view summarizes the five translation slots, their endpoints, saved state, runtime state, and counters. A saved line carries no traffic until it is **Running**.
 
-### MESH WiFi
+### DVRCP
 
-When MESH WiFi is active, the dashboard shows:
+When DVRCP is active, its status tab shows:
 
 - authenticated **Management channel** to Fácil IoT;
 - exclusive **Device mode**;
 - local **Orchestration readiness**;
 - persistent **Terminal Units** inventory.
 
-Terminal Unit columns include name, serial, IP, configured manufacturer, detected model/part number, firmware, IP status, and Telnet management. IP reachability and authenticated Telnet are independent.
+Terminal Unit columns include name, serial, management IP, route/output, next hop, manufacturer, model, firmware, and the three states **IP**, **Mgmt**, and **Internet**. The inventory section below explains each state and the autonomous five-minute scan.
 
 ### Mgmt & VPN
 
@@ -105,36 +108,62 @@ Profiles are reusable. Password fields are write-only; blank retains the saved s
 
 Use **Stop** before editing or deleting. Delete removes the line, not shared profiles. If a line fails, check mode, line state, Ethernet/gateway/DNS, both profiles, remote services, credentials, TLS time, and the event log.
 
-## MESH WiFi
+## DVRCP
 
 ### Architecture and operating mode
 
-The validated path is:
+Fácil IoT defines the assigned inventory and desired radio configuration. traDUKtor executes site-local utilities through the compiled Astra Wireless plugin and reports results through authenticated MQTT over TLS. The stable routed-network workflow includes reading, comparing, applying, saving, and verifying supported Headend and Access templates.
 
-1. Fácil IoT to traDUKtor through authenticated MQTT over TLS.
-2. traDUKtor directly to Terminal Units through Telnet.
+**Enable DVRCP** stops Translation and its running lines without deleting their saved configuration. It is available after **Managed by Fácil IoT** is configured and connected. The Astra Wireless plugin can be enabled or disabled independently under DVRCP; disabling it stops Astra operations without deleting the TU inventory. The Fácil IoT application is named **MESH WiFi**; the local execution service is named **DVRCP**.
 
-**Enable MESH WiFi** stops Translation and its running lines. It is unavailable until **Managed by Fácil IoT** is configured and connected. MESH WiFi reserves the profiles and capacity needed for orchestration.
+### Fácil IoT coordination and commissioning order
 
-### Fácil IoT coordination
+Enter the Fácil IoT host/IP and port, and authorize the factory serial in Fácil IoT. The MQTT identity is separate from TU Telnet credentials. In Fácil IoT, enable MESH WiFi, add the registered manager, and commission node 1 as Headend before Access nodes 2 through 10. Each traDUKtor supports one Headend and up to nine Access units.
 
-Enter the Fácil IoT host/IP and port. The factory serial identifies traDUKtor; authorize that serial in Fácil IoT first. The management credential is separate from all Terminal Unit credentials.
+Use the [Fácil IoT first-time routed-network procedure](/docs/facil-iot#mesh-wifi-first-routed-network-setup) for the complete menu sequence. Compare each target with the observed radio, apply required changes, wait for verification, and accept with **Finish**. Saving a desired role plan alone does not configure the radio.
 
-### Persistent Terminal Units
+### Persistent inventory and autonomous checks
 
-Fácil IoT synchronizes up to ten desired records. Each record contains name, serial, manufacturer hint, management IP, Telnet user, and Telnet password. traDUKtor retains inventory across restarts and reports configured identity separately from detected evidence.
+Open **Dashboard > DVRCP**, then **Terminal Units**, to inspect the retained inventory. traDUKtor checks assigned TUs at startup and normally every **300 seconds (5 min)**. It updates reachable TUs with current IP, authenticated management, identity, addressing, and device-level Internet results. It executes one bounded Internet ping on each reachable, managed TU using the radio's normal route; it does not require a separate Internet test from every interface.
 
-The selected manufacturer is a hint. A vendor adapter validates the response and reports manufacturer, model, firmware, and serial. A mismatch requires explicit review in Fácil IoT.
+A TU that becomes unreachable remains listed. Its last known name, serial, manufacturer, model, firmware, and management address are retained rather than erased by an incomplete observation. Current reachability and management evidence are reported separately from historical metadata. Fácil IoT explicitly synchronizes additions, changes, and removals; an offline radio is not a deletion request.
 
-### Astra Wireless utility set
+| Column | Meaning |
+| --- | --- |
+| Name / Serial | Assigned equipment identity, reconciled with the detected radio. |
+| Management IP | Address traDUKtor uses to reach that TU. |
+| Route / Output | Actual lookup: directly connected, specific route, or default route, and outgoing interface. |
+| Next hop | Next address used to reach the target; for a direct target, the target itself. |
+| Manufacturer / Model / Firmware | Last observed equipment identity and software. |
+| IP | OK after a successful reachability check; Unreachable when there is no reply; Awaiting before evidence is available. |
+| Mgmt | OK after management succeeds; Awaiting when management has not succeeded or IP is unavailable. |
+| Internet | OK after the TU's normal-route Internet test succeeds; Unreachable after failure; Awaiting when no current test can be completed. |
 
-The stable vendor adapter is Astra Wireless. Bounded utilities collect identity, health, complete paginated `config show`, interfaces, routing, MINT/MESH, switching, ACL, firewall, NAT, DHCP, WiFi, and LLDP evidence.
+Mgmt uses the authenticated Telnet result, rather than requiring a second ping back to traDUKtor. Internet indicates reachability from the TU itself; it does not certify browsing from every client subnet or captive-portal enforcement. A manufacturer mismatch requires explicit review in Fácil IoT before configuration writes.
 
-Remote commands through the Headend may accelerate neighbor observation. Configuration writes use a direct target Telnet session whenever possible and require target-specific verification.
+### Inventory utility and temporary live refresh
 
-### Captive access status
+The DVRCP inventory utility returns a consolidated snapshot of retained TUs, current health evidence, management paths, and routes. Fácil IoT uses that response to build its Routing diagram instead of scheduling separate per-interface diagnostic jobs for every screen refresh.
 
-The runtime can list quarantined clients and temporary approvals. Quarantine blocks navigation; an approval allows the displayed client for the displayed interval. These states support the future captive-portal policy and do not replace final routing/firewall rules.
+Fácil IoT requests one snapshot automatically when Routing is opened or a manager is selected. With **Refresh** unchecked it keeps that view fixed; traDUKtor still performs its normal five-minute local scan. Enabling Refresh requests a temporary interval of **10 s, 30 s, 1 min, or 5 min**. Disabling it, leaving Routing, or closing the browser releases the temporary request. If the browser disappears unexpectedly, its request expires and normal scanning resumes. Closing the view does not delete any inventory or routes.
+
+### Permanent return routes - destination-specific routing
+
+traDUKtor installs specific destination networks through **Headend eth0** while preserving its independently configured default gateway. This is the routed-network path used by the stable release. The Headend routes Access traffic and provides the Internet exit through NAT on eth0.
+
+Fácil IoT sends the confirmed routing plan after Headend commissioning and updates it as Access configurations are confirmed. Installed routes are stored compactly and persist across power loss, restarts, and loss of Fácil IoT. They remain until an explicit controller update changes or withdraws them; inventory refresh sessions do not own these permanent routes.
+
+Check the reported storage state. A route active only in memory is not yet confirmed permanent. A saved acknowledgement confirms persistence; diagnose a storage error before relying on restart recovery. **Configuration > Network** changes to management IP or gateway are saved separately and require a reboot as stated by the interface. Save successfully before rebooting.
+
+### Astra Wireless utilities and safe configuration
+
+The vendor adapter collects identity, health, complete paginated configuration, interfaces, routing, MINT/MESH, switching, ACL, firewall, NAT, DHCP, WiFi, and LLDP evidence. Configuration writes use allow-listed operations and target-specific verification. Detection alone never authorizes a write.
+
+Progress is reported while a reviewed configuration is applied and verified. In Fácil IoT, **Finish** confirms the completed session. **Cancel** offers a rollback of items with known original values and identifies items that will retain their new values. Do not assume an unobserved original value can be reconstructed.
+
+### Optional captive access
+
+A complete routed network works without a captive portal. Captive Portal is off by default, and its global activation and policy setup belong to the next commissioning stage. Existing experimental client restrictions must not be confused with an already commissioned captive service. Device-level IP, Mgmt, and Internet checks do not validate client authorization.
 
 ## Configuration
 

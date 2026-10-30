@@ -2,22 +2,25 @@
 title: Fácil IoT manual
 slug: /facil-iot
 sidebar_position: 4
-description: Complete operating manual for Fácil IoT 0.1.18.
+description: Complete operating manual for Fácil IoT 0.1.19.
+last_update:
+  date: 2026-10-30
+  author: DukeVilla
 ---
 
 # Fácil IoT operational manual
 
 ![Fácil IoT logo](/img/facil-iot-logo.png)
 
-**Current stable release:** `0.1.18`
+**Current stable release:** `0.1.19`
 
 **Reference appliance:** Protectli FW7225
 **Manual scope:** operation, communities, devices, alarms, licenses, integrations, MESH WiFi, configuration, maintenance, and recovery.
 
-[Download the PDF manual](/downloads/facil-iot/Facil_IoT_Operational_Manual_0.1.18.pdf)
+**Living manual:** this online page is the current operational reference. It is updated in place.
 
 :::info Living manual
-This page is the current public manual and is updated in place. The PDF records the stable release represented by this edition.
+Use this page for current procedures. Software releases link here; separate versioned manual copies are not maintained.
 :::
 
 ## Product overview
@@ -122,54 +125,106 @@ Platform integrations show internal service state. Community integrations connec
 
 An enabled integration still needs a successful health check and a route or workflow. Gateway and traDUKtor MQTT identities remain per-device and are not replaced by a general integration.
 
-## MESH WiFi
+## MESH WiFi: first routed-network setup
 
-Fácil IoT is the desired-state control plane; traDUKtor is the site-local execution agent. The MESH workspace has **Global**, **MESH traDUKtors**, **MESH Terminal Units**, **Routing**, and **Captive Portal** tabs.
+Fácil IoT defines the network and traDUKtor manages the assigned Astra Terminal Units (TUs) locally. A routed MESH network can operate permanently **without a captive portal**. Captive Portal is optional and off by default; its activation and configuration are a separate commissioning stage.
 
-### Global
+Each traDUKtor supports a maximum of **10 Terminal Units: one Headend and nine Access units**. Commission the Headend first, verify it, and then commission the Access units. The Headend supplies the routed Internet exit and NAT through eth0. traDUKtor retains its own default gateway and installs specific return routes through the Headend.
 
-Global settings define deployment-wide addressing, naming, policy defaults, and captive-service context used when generating plans. Changes here are desired-state inputs and do not directly reconfigure a radio.
+### Before you start
 
-### MESH traDUKtors
+Prepare the community and site, a registered traDUKtor with working authenticated MQTT management, and Astra radios with known management addresses and Telnet credentials. Confirm that traDUKtor can initially reach the Headend on its management network. A route to a remote Access network cannot establish itself before its Headend path exists.
 
-Select the traDUKtor responsible for a Site. Readiness requires authenticated MQTT, MESH permission, compatible firmware, retained inventory, and local reachability prerequisites. A traDUKtor can manage up to ten Terminal Units.
+Use the current stable software on both products. Registration and role assignment are different operations: **Devices** registers equipment and its management settings; **MESH WiFi** assigns that equipment to the application and commissions its role. A detected identity mismatch must be reviewed before applying configuration.
 
-### MESH Terminal Units
+### Step 1: Global - enable the application
 
-Select a traDUKtor and assign exactly one **Headend** plus up to nine **Access** nodes.
+1. Open **MESH WiFi**, then **Global**.
+2. Enable the MESH WiFi service and click **Apply**.
+3. Confirm that the application is enabled before proceeding to equipment selection.
 
-- Node 1 is always the Headend.
-- Access nodes occupy positions 2 through 10.
-- Up/down arrows reorder Access routing position.
-- **Save role plan** persists roles and order.
-- **Configuration** remains disabled until the role plan is saved.
+Global controls the application. It does not replace the individual traDUKtor MQTT enrollment or automatically enable captive restrictions.
 
-The Headend provides upstream/default-gateway access. Access nodes extend service through the MESH backhaul. Replacing the Headend moves the replacement to node 1.
+### Step 2: MESH traDUKtors - select local managers
 
-### Configuration review
+1. Register and authorize the traDUKtor under **Devices > traDUKtors** if it is not already present. Complete its MQTT management setup.
+2. Open **MESH WiFi > MESH traDUKtors** and add one or more of the already registered traDUKtors.
+3. Confirm that the selected manager is available for the MESH application. On traDUKtor, DVRCP and the Astra Wireless plugin must be enabled for Astra operations.
 
-The configuration window has two columns:
+Each traDUKtor has its own TU inventory and routed network. Always check the selector before assigning equipment or reviewing a map.
 
-- **Current configuration**: read-only normalized evidence from the Terminal Unit.
-- **Recommended configuration**: complete role template generated by Fácil IoT.
+### Step 3: MESH Terminal Units - add the Headend first
 
-Sections cover internal switching, management path, Ethernet/WiFi/MESH interfaces, default gateway, routes, ACL, firewall, NAT, DHCP, LLDP, and other required service state. Collapsible sections keep the comparison compact.
+1. Open **MESH Terminal Units** and select the intended traDUKtor.
+2. Use **Open Terminal Units in Devices** to register the first TU and associate it with that traDUKtor. Enter its management address, manufacturer hint, and Telnet credentials.
+3. Return to **MESH Terminal Units** and select that traDUKtor again.
+4. Assign **Headend** to the first TU and click **Save role plan**. The Headend occupies node 1; Access units occupy nodes 2 through 10.
+5. Open the Headend's **Configuration** and complete Step 4 before commissioning Access units.
 
-**Edit recommendation** requires acknowledgement that advanced Astra Wireless expertise is needed. **Apply changes** submits a bounded job to traDUKtor. **Cancel** makes no changes.
+The role selector chooses the target template. The node-order arrows order Access units; check the role plan before saving because node order participates in generated configuration. Saving a role plan alone does not prove that any radio settings were applied.
 
-:::warning Level 3 status
-Stable releases validate management Levels 1 and 2. Full Level 3 application is controlled work until arbitrary starting configurations can be read, transitioned, and verified without losing management.
-:::
+### Step 4: Configuration - compare, apply, and confirm
 
-### Routing
+The configuration dialog compares the **observed** radio settings with the **target** for its role and site. Review the complete checklist, including the addressing, routing, services, and naming required by the selected template.
 
-Routing uses the saved node order to build the tree from the Headend upstream interface toward Access nodes. It must identify default gateway, per-node MESH addresses, downstream networks, next hops, conflicts, missing return routes, loops, and unreachable management paths.
+| Checklist state | Meaning and next action |
+| --- | --- |
+| Matches template | The observed value matches the target; no change is needed for that item. |
+| Change required | The observed value differs; review the proposed target before applying. |
+| Observation required | The original value was not observed. Do not assume that it matched or that its original value can be restored. |
 
-Review every route before application. The visual order is operational input, not decoration.
+1. Review the comparison. Use **Edit recommendation** only when the proposed settings need a deliberate adjustment. **Advanced actions** remains available for supported expert changes even when the normal checklist already matches.
+2. When changes are required, click **Apply configuration** and confirm the reviewed operation. When everything already matches, the normal Apply action is gray and disabled.
+3. Follow the progress indicators through dispatch, contact, loading, saving, saved-configuration confirmation, and operating verification. Wait for the actual result; storing a desired template is not proof of success.
+4. After successful application and verification, click **Finish** to accept the changes and close the configuration session. Finish ends the session's rollback opportunity.
+5. If you choose **Cancel** after changes were applied, read the rollback confirmation. It identifies the items that can be restored and those that will retain their new settings because an original value was unavailable. Confirming performs that restoration; dismissing the confirmation keeps the session open.
 
-### Captive Portal
+If an operation fails, review its reported result and restore or correct the affected items before continuing. A complete match and a completed confirmation are the commissioning goal. Keep the Headend reachable throughout this process.
 
-Captive Portal defines the client network, DHCP range/options, DNS/portal destination, quarantine behavior, temporary approval, NAT, ACL, and firewall policy. The intended outcome is that unauthenticated clients reach only required services and the portal; authorized clients follow approved Internet policy.
+### Step 5: Add and commission each Access unit
+
+1. Once the Headend is configured and confirmed, register an Access TU under **Devices > Terminal Units** and associate it with the same traDUKtor.
+2. Select the traDUKtor in **MESH Terminal Units**, assign **Access**, and save the role plan.
+3. Open **Configuration**, review the Access target, apply required changes, wait for verification, and click **Finish**.
+4. Repeat for each Access unit, up to nine. Check the intended node order and management addresses before applying each template.
+
+This order establishes the Headend path before remote Access management depends on it. A confirmed Headend enables the routing workflow; confirmed Access configurations add their relevant networks to the routed plan. Do not skip configuration verification simply because a TU replies to a ping.
+
+### Step 6: Routing - read the network snapshot
+
+Open **Routing** and select the traDUKtor. The first snapshot loads automatically. There is no separate Verify button. The drawing shows the manager, Headend, Access connections, names, management IPs, and three simple states supplied by traDUKtor.
+
+| State | OK means | If it is Not OK |
+| --- | --- | --- |
+| IP | traDUKtor reached the TU management address. | Check power, addressing, the Headend path, and the listed route. |
+| Mgmt | The TU management session succeeded. | Check IP reachability, Telnet service, credentials, and identity. |
+| Internet | A ping executed on that TU using its normal route reached Internet. | Check that TU's default route, Headend exit, NAT, and restrictions; an ICMP failure alone does not identify the cause. |
+
+Internet is a device-level check, not a separate requirement for every interface. It does not prove client authentication or captive-portal enforcement. Unavailable or not-yet-tested evidence must not be read as a successful test. Offline TUs remain in the inventory with their last known identity and addressing; they are not deleted merely because they stop replying.
+
+Below the drawing, **Static routes** lists each destination network, next hop, and reported installation state. **Saved** means traDUKtor confirmed permanent storage. **Active** without saved confirmation is not yet proof of restart persistence; **Pending** requires further review. These specific routes reach the remote networks through Headend eth0 without replacing traDUKtor's default gateway.
+
+If the Headend configuration is incomplete, follow the configuration prompt and return to the previous step. If a commissioned TU is not OK, revisit its reachability and configuration before treating the network as ready. When all commissioned units show IP, Mgmt, and Internet OK and the required routes are saved, the routed-network milestone is complete. A user can stop here and operate without any captive portal.
+
+### Routing refresh options
+
+| Control or event | Behavior |
+| --- | --- |
+| Enter Routing or select a traDUKtor | Requests one snapshot automatically. |
+| Refresh unchecked (default) | Keeps that snapshot unchanged, even if the page stays open for more than five minutes. |
+| Interval selector | Defaults to 5 min; alternatives are 10 s, 30 s, and 1 min. Selecting an interval alone does not start refresh. |
+| Refresh checked | Requests updated inventory at the selected interval and asks traDUKtor to use that temporary diagnostic interval. |
+| Change interval while enabled | Updates the requested refresh interval. Requests do not overlap. |
+| Uncheck Refresh | Stops periodic requests, releases the temporary interval, and keeps the last displayed snapshot. |
+| Leave Routing, change manager, or close the browser | Ends the view's temporary refresh session. It does not remove TUs, configuration, or routes. |
+
+traDUKtor normally scans its retained TU inventory at startup and every five minutes, independently of the browser. A live refresh session can temporarily request another interval. On release it returns to normal operation; if the browser disappears without releasing it, the temporary request expires automatically. Returning from a background browser view does not silently restart queries; re-enable Refresh or enter Routing again for a new snapshot.
+
+The display is a diagnostic snapshot, not a continuous polling obligation. Choose shorter intervals only while observing commissioning or recovery, then disable Refresh when finished. Removing a TU or withdrawing a managed route requires an explicit Fácil IoT inventory or routing change. A controller outage, an offline TU, or closing this screen does not erase saved routes.
+
+### Next stage: optional Captive Portal
+
+Keep **Captive Portal** off for an unrestricted routed network. Its global activation and policy configuration are a separate next milestone, after the routed network is stable. Existing radio rules from previous manual tests may still restrict traffic; a green device-level Internet result does not validate a captive client's full browsing experience.
 
 ## Settings
 
@@ -223,7 +278,7 @@ Never remove persistent volumes or prune host-wide container data without identi
 3. Install and observe progress.
 4. Confirm service health and return to login.
 5. Confirm version, uptime, database data, users, devices, MQTT, and previous release.
-6. Repeat critical operational checks for MESH Levels 1 and 2.
+6. Repeat the routed MESH checks: management, confirmed configuration, saved return routes, and IP/Mgmt/Internet states for each commissioned TU.
 
 ## Security checklist
 

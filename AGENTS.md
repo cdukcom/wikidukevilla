@@ -23,9 +23,12 @@ Public URL: `https://wiki.duke-villa.com`
 
 ## Source of truth
 
-- The approved manual in the corresponding product repository is the primary
-  source of truth.
-- WikiDukeVilla contains the public web edition and its downloadable PDF.
+- For Fácil IoT and traDUKtor, the online wiki is the single living manual.
+- Update docs/facil-iot.md and docs/traduktor.md in place; product repositories
+  contain links only, not duplicate manuals. Do not generate versioned PDF
+  editions for these two products. Existing historical downloads are retained
+  for old links and are not current manuals.
+- Other products retain their established publication policy.
 - Never edit production files directly on the VPS.
 - Keep internal publishing notes under `internal/`, outside the Docusaurus
   documentation tree.
@@ -69,8 +72,8 @@ static/downloads/facil-iot/
 1. Compare the approved source against the current Markdown edition.
 2. Preserve stable URLs unless a redirect is intentionally added.
 3. Update only content supported by the new product release.
-4. Update every visible version reference consistently: page title, manual
-   metadata, homepage card, documentation center, PDF filename, and links.
+4. Update applicable software baseline references consistently. Fácil IoT and
+   traDUKtor use stable living-manual URLs, not versioned manual editions.
 5. Retain older release artifacts when required for traceability; do not label
    an unverified draft as the current manual.
 6. Rebuild and inspect the affected pages before publication.
