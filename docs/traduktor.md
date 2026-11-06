@@ -70,7 +70,7 @@ An unavailable or stopped value is never inferred. A green badge confirms only t
 
 This view summarizes the five translation slots, their endpoints, saved state, runtime state, and counters. A saved line carries no traffic until it is **Running**.
 
-### DVRCP
+### DVRCP status {#dvrcp-status}
 
 DVRCP provides the control workflow for remotely configuring **compatible access equipment** from Fácil IoT through traDUKtor. Fácil IoT defines inventory, desired configuration and approved actions; traDUKtor executes supported operations locally through validated device adapters and returns observed results. It is independent of a particular equipment brand, but support must be validated for the model, firmware and adapter. It does not make an arbitrary IP device compatible automatically.
 
@@ -118,7 +118,7 @@ Profiles are reusable. Password fields are write-only; blank retains the saved s
 
 Use **Stop** before editing or deleting. Delete removes the line, not shared profiles. If a line fails, check mode, line state, Ethernet/gateway/DNS, both profiles, remote services, credentials, TLS time, and the event log.
 
-## DVRCP
+## DVRCP {#dvrcp}
 
 DVRCP provides the control workflow for remotely configuring **compatible access equipment** from Fácil IoT through traDUKtor. Fácil IoT defines inventory, desired configuration and approved actions; traDUKtor executes supported operations locally through validated device adapters and returns observed results. It is independent of a particular equipment brand, but support must be validated for the model, firmware and adapter. It does not make an arbitrary IP device compatible automatically.
 

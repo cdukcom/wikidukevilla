@@ -66,7 +66,7 @@ Un valor no disponible o un servicio detenido no se interpreta como exitoso. Cad
 
 Resume los cinco espacios de traducción, extremos, configuración guardada, estado de ejecución y contadores. Una línea guardada no transporta datos hasta estar **Running**.
 
-### DVRCP
+### Estado DVRCP {#estado-dvrcp}
 
 Muestra el canal de administración autenticado hacia Fácil IoT, el modo exclusivo, la disponibilidad local de orquestación y el inventario persistente de **Terminal Units**. El estado IP y la administración autenticada son comprobaciones independientes.
 
@@ -101,7 +101,7 @@ Los perfiles se reutilizan. Las contraseñas son de solo escritura; un campo vac
 
 Use **Stop** antes de editar o eliminar. Eliminar una línea no elimina sus perfiles compartidos. Ante una falla, revise modo, estado de línea, Ethernet, gateway, DNS, ambos perfiles, servicios remotos, credenciales, hora para TLS y eventos.
 
-## DVRCP
+## DVRCP {#dvrcp}
 
 DVRCP permite configurar remotamente **equipos de acceso compatibles** desde Fácil IoT mediante traDUKtor. Fácil IoT define inventario, configuración deseada y acciones aprobadas. traDUKtor ejecuta las operaciones soportadas localmente mediante adaptadores validados y devuelve resultados observados.
 
