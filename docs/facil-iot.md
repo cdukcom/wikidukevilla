@@ -4,13 +4,17 @@ slug: /facil-iot
 sidebar_position: 4
 description: Complete operating manual for Fácil IoT 0.1.19.
 last_update:
-  date: 2026-10-30
+  date: 2026-11-06
   author: DukeVilla
 ---
 
 # Fácil IoT operational manual
 
 ![Fácil IoT logo](/img/facil-iot-logo.png)
+
+[Español](/docs/es/facil-iot) | English
+
+[Family brochure (English)](https://www.duke-villa.com/api/datasheets/datasheets%2Fen%2Ffacil-iot%2FFacil_IoT_Family_Brochure.pdf) · [Ficha de familia (Español)](https://www.duke-villa.com/api/datasheets/datasheets%2Fes%2Ffacil-iot%2FBrochure_Familia_Facil_IoT.pdf)
 
 **Current stable release:** `0.1.19`
 
@@ -84,7 +88,7 @@ Register name, factory serial, community, management IP, MQTT management enablem
 
 ### Terminal Units
 
-Register name, community, Site, manufacturer, serial, management IP, Telnet username/password, and assigned traDUKtor. The current manufacturer list begins with **Astra Wireless** and can grow as new utility adapters are implemented.
+Register name, community, Site, manufacturer, serial, management IP, Telnet username/password, and assigned traDUKtor. Select the validated adapter for the equipment model and firmware. A manufacturer field or an IP address alone does not establish compatibility or authorize configuration writes.
 
 The page separates **Configured** identity from **Detected** manufacturer, model, firmware, and serial. **Review** is enabled for mismatches. Confirm only after checking the equipment. Credentials are write-only and synchronized securely to the assigned traDUKtor.
 
@@ -125,15 +129,23 @@ Platform integrations show internal service state. Community integrations connec
 
 An enabled integration still needs a successful health check and a route or workflow. Gateway and traDUKtor MQTT identities remain per-device and are not replaced by a general integration.
 
+## DVRCP remote access-device management
+
+Fácil IoT centrally configures compatible access equipment through traDUKtor and DVRCP. It stores the assigned inventory and desired configuration, presents observed state for review, submits approved operations and displays verification results. traDUKtor executes the supported device operations locally through the validated adapter; network processing remains on the managed equipment.
+
+![Generic DVRCP management architecture](/img/dvrcp-access-en.svg)
+
+This workflow is not tied to a particular equipment brand. Compatibility and available actions depend on the model, firmware and adapter. When compatible equipment provides WiFi and captive-access support, its portal can be enabled and configured from Fácil IoT. WiFi and captive portals are optional; neither is required for basic remote device configuration.
+
 ## MESH WiFi: first routed-network setup
 
-Fácil IoT defines the network and traDUKtor manages the assigned Astra Terminal Units (TUs) locally. A routed MESH network can operate permanently **without a captive portal**. Captive Portal is optional and off by default; its activation and configuration are a separate commissioning stage.
+Fácil IoT defines the network and traDUKtor manages the assigned compatible access devices, called Terminal Units (TUs) in the interface, locally through DVRCP and the validated adapter. The following Headend/Access procedure applies to the routed profile that supports those roles. A routed MESH network can operate permanently **without a captive portal**. Captive Portal is optional and off by default; its activation and configuration are a separate commissioning stage.
 
 Each traDUKtor supports a maximum of **10 Terminal Units: one Headend and nine Access units**. Commission the Headend first, verify it, and then commission the Access units. The Headend supplies the routed Internet exit and NAT through eth0. traDUKtor retains its own default gateway and installs specific return routes through the Headend.
 
 ### Before you start
 
-Prepare the community and site, a registered traDUKtor with working authenticated MQTT management, and Astra radios with known management addresses and Telnet credentials. Confirm that traDUKtor can initially reach the Headend on its management network. A route to a remote Access network cannot establish itself before its Headend path exists.
+Prepare the community and site, a registered traDUKtor with working authenticated MQTT management, and compatible access devices with a validated adapter, known management addresses and the credentials required by that adapter. Confirm that traDUKtor can initially reach the Headend on its management network. A route to a remote Access network cannot establish itself before its Headend path exists.
 
 Use the current stable software on both products. Registration and role assignment are different operations: **Devices** registers equipment and its management settings; **MESH WiFi** assigns that equipment to the application and commissions its role. A detected identity mismatch must be reviewed before applying configuration.
 
@@ -149,7 +161,7 @@ Global controls the application. It does not replace the individual traDUKtor MQ
 
 1. Register and authorize the traDUKtor under **Devices > traDUKtors** if it is not already present. Complete its MQTT management setup.
 2. Open **MESH WiFi > MESH traDUKtors** and add one or more of the already registered traDUKtors.
-3. Confirm that the selected manager is available for the MESH application. On traDUKtor, DVRCP and the Astra Wireless plugin must be enabled for Astra operations.
+3. Confirm that the selected manager is available for the MESH application. On traDUKtor, DVRCP and the validated adapter for the selected equipment must be enabled for its supported operations.
 
 Each traDUKtor has its own TU inventory and routed network. Always check the selector before assigning equipment or reviewing a map.
 
@@ -161,11 +173,11 @@ Each traDUKtor has its own TU inventory and routed network. Always check the sel
 4. Assign **Headend** to the first TU and click **Save role plan**. The Headend occupies node 1; Access units occupy nodes 2 through 10.
 5. Open the Headend's **Configuration** and complete Step 4 before commissioning Access units.
 
-The role selector chooses the target template. The node-order arrows order Access units; check the role plan before saving because node order participates in generated configuration. Saving a role plan alone does not prove that any radio settings were applied.
+The role selector chooses the target template. The node-order arrows order Access units; check the role plan before saving because node order participates in generated configuration. Saving a role plan alone does not prove that any device settings were applied.
 
 ### Step 4: Configuration - compare, apply, and confirm
 
-The configuration dialog compares the **observed** radio settings with the **target** for its role and site. Review the complete checklist, including the addressing, routing, services, and naming required by the selected template.
+The configuration dialog compares the **observed** device settings with the **target** for its role and site. Review the complete checklist, including the addressing, routing, services, and naming required by the selected template.
 
 | Checklist state | Meaning and next action |
 | --- | --- |
@@ -224,7 +236,7 @@ The display is a diagnostic snapshot, not a continuous polling obligation. Choos
 
 ### Next stage: optional Captive Portal
 
-Keep **Captive Portal** off for an unrestricted routed network. Its global activation and policy configuration are a separate next milestone, after the routed network is stable. Existing radio rules from previous manual tests may still restrict traffic; a green device-level Internet result does not validate a captive client's full browsing experience.
+When the equipment provides WiFi and the validated adapter supports captive access, enable and configure the optional portal from Fácil IoT. Keep **Captive Portal** off for an unrestricted routed network. Its global activation and policy configuration are a separate next milestone, after the routed network is stable. Existing device rules from previous manual tests may still restrict traffic; a green device-level Internet result does not validate a captive client's full browsing experience.
 
 ## Settings
 

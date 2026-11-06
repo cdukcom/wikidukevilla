@@ -4,13 +4,17 @@ slug: /traduktor
 sidebar_position: 3
 description: Complete operating manual for traDUKtor Lite 0.2.32.
 last_update:
-  date: 2026-10-30
+  date: 2026-11-06
   author: DukeVilla
 ---
 
 # traDUKtor Lite operational manual
 
 ![traDUKtor logo](/img/traduktor-logo.png)
+
+[Español](/docs/es/traduktor) | English
+
+[Family brochure (English)](https://www.duke-villa.com/api/datasheets/datasheets%2Fen%2Ftraduktor%2FtraDUKtor_Family_Brochure.pdf) · [Ficha de familia (Español)](https://www.duke-villa.com/api/datasheets/datasheets%2Fes%2Ftraduktor%2FBrochure_Familia_traDUKtor.pdf)
 
 **Current stable release:** `0.2.32`
 
@@ -68,6 +72,12 @@ This view summarizes the five translation slots, their endpoints, saved state, r
 
 ### DVRCP
 
+DVRCP provides the control workflow for remotely configuring **compatible access equipment** from Fácil IoT through traDUKtor. Fácil IoT defines inventory, desired configuration and approved actions; traDUKtor executes supported operations locally through validated device adapters and returns observed results. It is independent of a particular equipment brand, but support must be validated for the model, firmware and adapter. It does not make an arbitrary IP device compatible automatically.
+
+![Generic DVRCP management architecture](/img/dvrcp-access-en.svg)
+
+WiFi is optional. When the managed equipment provides WiFi and the validated integration supports captive access, its portal can be enabled and configured from Fácil IoT. Network functions and access enforcement remain on the equipment. A routed access network can operate without a captive portal.
+
 When DVRCP is active, its status tab shows:
 
 - authenticated **Management channel** to Fácil IoT;
@@ -110,27 +120,33 @@ Use **Stop** before editing or deleting. Delete removes the line, not shared pro
 
 ## DVRCP
 
+DVRCP provides the control workflow for remotely configuring **compatible access equipment** from Fácil IoT through traDUKtor. Fácil IoT defines inventory, desired configuration and approved actions; traDUKtor executes supported operations locally through validated device adapters and returns observed results. It is independent of a particular equipment brand, but support must be validated for the model, firmware and adapter. It does not make an arbitrary IP device compatible automatically.
+
+![Generic DVRCP management architecture](/img/dvrcp-access-en.svg)
+
+WiFi is optional. When the managed equipment provides WiFi and the validated integration supports captive access, its portal can be enabled and configured from Fácil IoT. Network functions and access enforcement remain on the equipment. A routed access network can operate without a captive portal.
+
 ### Architecture and operating mode
 
-Fácil IoT defines the assigned inventory and desired radio configuration. traDUKtor executes site-local utilities through the compiled Astra Wireless plugin and reports results through authenticated MQTT over TLS. The stable routed-network workflow includes reading, comparing, applying, saving, and verifying supported Headend and Access templates.
+Fácil IoT defines the assigned inventory and desired device configuration. traDUKtor executes site-local utilities through the enabled, validated device adapter and reports results through authenticated MQTT over TLS. The routed-network workflow includes reading, comparing, applying, saving, and verifying supported templates. Headend and Access roles apply only when the selected device profile implements that topology.
 
-**Enable DVRCP** stops Translation and its running lines without deleting their saved configuration. It is available after **Managed by Fácil IoT** is configured and connected. The Astra Wireless plugin can be enabled or disabled independently under DVRCP; disabling it stops Astra operations without deleting the TU inventory. The Fácil IoT application is named **MESH WiFi**; the local execution service is named **DVRCP**.
+**Enable DVRCP** stops Translation and its running lines without deleting their saved configuration. It is available after **Managed by Fácil IoT** is configured and connected. The installed device adapter can be enabled or disabled under DVRCP; disabling it stops its device-specific operations without deleting the retained inventory. The Fácil IoT application is named **MESH WiFi**; the local execution service is named **DVRCP**.
 
 ### Fácil IoT coordination and commissioning order
 
-Enter the Fácil IoT host/IP and port, and authorize the factory serial in Fácil IoT. The MQTT identity is separate from TU Telnet credentials. In Fácil IoT, enable MESH WiFi, add the registered manager, and commission node 1 as Headend before Access nodes 2 through 10. Each traDUKtor supports one Headend and up to nine Access units.
+Enter the Fácil IoT host/IP and port, and authorize the factory serial in Fácil IoT. The MQTT identity is separate from TU Telnet credentials. In Fácil IoT, enable MESH WiFi, add the registered manager, and commission node 1 as Headend before Access nodes 2 through 10. The validated routed profile supports up to ten compatible units per traDUKtor: one Headend and up to nine Access units. Do not assume this topology or every operation is supported by a different device profile.
 
-Use the [Fácil IoT first-time routed-network procedure](/docs/facil-iot#mesh-wifi-first-routed-network-setup) for the complete menu sequence. Compare each target with the observed radio, apply required changes, wait for verification, and accept with **Finish**. Saving a desired role plan alone does not configure the radio.
+Use the [Fácil IoT first-time routed-network procedure](/docs/facil-iot#mesh-wifi-first-routed-network-setup) for the complete menu sequence. Compare each target with the observed device, apply required changes, wait for verification, and accept with **Finish**. Saving a desired role plan alone does not configure the device.
 
 ### Persistent inventory and autonomous checks
 
-Open **Dashboard > DVRCP**, then **Terminal Units**, to inspect the retained inventory. traDUKtor checks assigned TUs at startup and normally every **300 seconds (5 min)**. It updates reachable TUs with current IP, authenticated management, identity, addressing, and device-level Internet results. It executes one bounded Internet ping on each reachable, managed TU using the radio's normal route; it does not require a separate Internet test from every interface.
+Open **Dashboard > DVRCP**, then **Terminal Units**, to inspect the retained inventory. traDUKtor checks assigned TUs at startup and normally every **300 seconds (5 min)**. It updates reachable TUs with current IP, authenticated management, identity, addressing, and device-level Internet results. It executes one bounded Internet ping on each reachable, managed TU using the device's normal route; it does not require a separate Internet test from every interface.
 
-A TU that becomes unreachable remains listed. Its last known name, serial, manufacturer, model, firmware, and management address are retained rather than erased by an incomplete observation. Current reachability and management evidence are reported separately from historical metadata. Fácil IoT explicitly synchronizes additions, changes, and removals; an offline radio is not a deletion request.
+A TU that becomes unreachable remains listed. Its last known name, serial, manufacturer, model, firmware, and management address are retained rather than erased by an incomplete observation. Current reachability and management evidence are reported separately from historical metadata. Fácil IoT explicitly synchronizes additions, changes, and removals; an offline device is not a deletion request.
 
 | Column | Meaning |
 | --- | --- |
-| Name / Serial | Assigned equipment identity, reconciled with the detected radio. |
+| Name / Serial | Assigned equipment identity, reconciled with the detected device. |
 | Management IP | Address traDUKtor uses to reach that TU. |
 | Route / Output | Actual lookup: directly connected, specific route, or default route, and outgoing interface. |
 | Next hop | Next address used to reach the target; for a direct target, the target itself. |
@@ -155,15 +171,15 @@ Fácil IoT sends the confirmed routing plan after Headend commissioning and upda
 
 Check the reported storage state. A route active only in memory is not yet confirmed permanent. A saved acknowledgement confirms persistence; diagnose a storage error before relying on restart recovery. **Configuration > Network** changes to management IP or gateway are saved separately and require a reboot as stated by the interface. Save successfully before rebooting.
 
-### Astra Wireless utilities and safe configuration
+### Device adapters and safe configuration
 
-The vendor adapter collects identity, health, complete paginated configuration, interfaces, routing, MINT/MESH, switching, ACL, firewall, NAT, DHCP, WiFi, and LLDP evidence. Configuration writes use allow-listed operations and target-specific verification. Detection alone never authorizes a write.
+The validated device adapter exposes the capabilities supported by that equipment. These can include identity, health, configuration, interfaces, routing, switching, ACL, firewall, NAT, DHCP, WiFi and neighbor evidence. Do not assume that every adapter exposes every utility. Configuration writes use allow-listed operations and target-specific verification. Detection alone never authorizes a write.
 
 Progress is reported while a reviewed configuration is applied and verified. In Fácil IoT, **Finish** confirms the completed session. **Cancel** offers a rollback of items with known original values and identifies items that will retain their new values. Do not assume an unobserved original value can be reconstructed.
 
 ### Optional captive access
 
-A complete routed network works without a captive portal. Captive Portal is off by default, and its global activation and policy setup belong to the next commissioning stage. Existing experimental client restrictions must not be confused with an already commissioned captive service. Device-level IP, Mgmt, and Internet checks do not validate client authorization.
+A complete routed network works without a captive portal. Captive Portal is off by default, and its global activation and policy setup belong to the next commissioning stage. Enable and configure captive policies from Fácil IoT only after confirming device and adapter support. Existing experimental client restrictions must not be confused with an already commissioned captive service. Device-level IP, Mgmt, and Internet checks do not validate client authorization.
 
 ## Configuration
 

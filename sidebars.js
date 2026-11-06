@@ -10,12 +10,12 @@ module.exports = {
     {
       type: 'category',
       label: 'traDUKtor',
-      items: ['traduktor']
+      items: ['traduktor', 'es/traduktor']
     },
     {
       type: 'category',
       label: 'Facil IoT',
-      items: ['facil-iot']
+      items: ['facil-iot', 'es/facil-iot']
     }
   ]
 };
