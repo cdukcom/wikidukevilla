@@ -2,15 +2,14 @@
 title: VPNdukevilla User Manual
 id: overview
 slug: /vpndukevilla
-sidebar_label: User Manual 1.0.5
+sidebar_label: User Manual
 sidebar_position: 1
-version: 1.0.5
 language: en
 product: VPNdukevilla
 classification: Product documentation
 ---
 
-[Download the official PDF manual](/downloads/vpndukevilla/VPNdukevilla_User_Manual_v1.0.5.pdf)
+[Download the archived 1.0.5 PDF manual](/downloads/vpndukevilla/VPNdukevilla_User_Manual_v1.0.5.pdf)
 
 ![VPNdukevilla interface example](assets/vpndukevilla-v1.0.4/figure-01.png)
 
@@ -22,8 +21,7 @@ Control plane for StrongSwan and WireGuard · User and operations guide
 
 | Publisher | DukeVilla |
 | --- | --- |
-| Document version | 1.0.5 |
-| Release date | October 26, 2026 |
+| Software baseline | 1.0.7 |
 | Classification | Product documentation |
 
 *Operations document. It contains no passwords, PSKs, SNMP community strings, or private keys.*
@@ -32,9 +30,7 @@ Control plane for StrongSwan and WireGuard · User and operations guide
 
 | Field | Contents |
 | --- | --- |
-| Purpose | Provide a reusable description of every menu, field, administrative workflow, execution mode, integration, diagnostic, backup, and maintenance function in VPNdukevilla 1.0.5. |
-| Version | 1.0.5 |
-| Status | Ready for release |
+| Purpose | Provide a reusable description of every menu, field, administrative workflow, execution mode, integration, diagnostic, backup, and maintenance function in VPNdukevilla. |
 | Publisher | DukeVilla |
 | Intended audience | VPN administrators and operators |
 | Audience | Administrators and operators. Credentials and secrets are delivered through a separate secure channel. |
@@ -51,7 +47,7 @@ Control plane for StrongSwan and WireGuard · User and operations guide
 | 1 | Description and scope |
 | 2 | Architecture and security |
 | 3 | Sign-in and roles |
-| 4 | Overview |
+| 4 | Dashboard |
 | 5 | Tunnels |
 | 6 | Editing tunnels |
 | 7 | Configuration and Integrations |
@@ -66,13 +62,13 @@ Control plane for StrongSwan and WireGuard · User and operations guide
 
 ## Description and scope
 
-VPNdukevilla is a web control interface for inventorying, generating, applying, and verifying VPN configurations. In version 1.0.5, StrongSwan is operational and WireGuard is prepared for a later release. This release supports both online and offline signed updates, provides automatic backup and transactional rollback, and exports a human-readable sanitized system radiography.
+VPNdukevilla is a web control interface for inventorying, generating, applying, and verifying VPN configurations. The application manages both StrongSwan IPsec tunnels and WireGuard peers. This release supports both online and offline signed updates, provides automatic backup and transactional rollback, and exports a human-readable sanitized system radiography.
 
-| Capability | Version 1.0.5 |
+| Capability | Description |
 | --- | --- |
 | Tunnel inventory | Yes |
 | StrongSwan / IKEv2 | Yes |
-| WireGuard | Inventory and preparation; activation in a later release |
+| WireGuard | Server settings, peer inventory, apply, and handshake status |
 | CHILD_SA status | Yes, read from the host |
 | Ping / traceroute | Yes, through the host agent |
 | Events / CSV | Yes |
@@ -111,7 +107,7 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 | Role | Permissions |
 | --- | --- |
 | admin | Create, edit, and delete tunnels; apply configurations; change mode; manage accounts; create backups and radiographies; install upgrades. |
-| view | View Overview, Tunnels, events, previews, and diagnostics. Cannot modify the inventory or host. |
+| view | View Dashboard, Tunnels, events, previews, and diagnostics. Cannot modify the inventory or host. |
 
 1. Open the URL provided by the administrator.
 
@@ -124,22 +120,19 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 | IMPORTANT | Initial credentials are not published in this manual. They are delivered through a separate secure channel and must be changed at first sign-in. |
 | --- | --- |
 
-## Overview
-
-![VPNdukevilla interface example](assets/vpndukevilla-v1.0.4/figure-02.png)
-
-*Figure 1. Overview with operational summary, tunnel status, and events.*
+## Dashboard
 
 | Item | Interpretation |
 | --- | --- |
 | Configured tunnels | Number of connections stored in the inventory. |
 | StrongSwan up | Installed CHILD_SAs / configured StrongSwan tunnels. |
-| WireGuard | Inventoried WireGuard peers. |
+| WireGuard | Peers with a recent authenticated handshake / configured WireGuard peers. |
 | Execution mode | DRY RUN or LIVE, together with API, database, and agent health. |
-| Gateway tunnels | Compact summary with name, selectors, Remote ID, and status. |
+| System information | Running software version, access hostname, and WireGuard server tunnel address when active. |
+| Gateway tunnels | IPsec and WireGuard entries with engine, local and remote addresses, and status. |
 | Event log | StrongSwan events; initially collapsed, with Refresh and Export CSV controls. |
 
-| IMPORTANT | Up means that a CHILD_SA is installed. To confirm end-to-end service, also ping the protected IP address. |
+| IMPORTANT | IPsec Up means a CHILD_SA is installed. WireGuard Up means an authenticated handshake occurred within the last 180 seconds. Use Diagnostics to verify reachability separately. |
 | --- | --- |
 
 ## Tunnels
@@ -187,7 +180,7 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 | Field | Rule | Example |
 | --- | --- | --- |
 | Name | Unique, stable, lowercase letters and hyphens | ipsec-remote03 |
-| Engine | StrongSwan in production version 1.0.5 | StrongSwan |
+| Engine | IPsec / IKEv2 or WireGuard | StrongSwan |
 | Local host | Public IP or gateway listening address | Address assigned to the server |
 | Local network | Local protected selector in CIDR notation | 10.254.100.1/32 |
 | Remote host | %any for peers with dynamic IP addresses | %any |
@@ -213,7 +206,7 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 | StrongSwan Preview | Displays ipsec.conf and ipsec.secrets with PSKs masked. |
 | StrongSwan Apply | Sends inventory to the agent, validates, backs up, writes, restarts, verifies, and rolls back on failure. |
 | WireGuard Preview | Generates the proposed configuration. |
-| WireGuard Generate | Reserved for future WireGuard support. |
+| WireGuard Apply | Applies the saved server settings and enabled peers to the host. |
 | Admin account | Changes the administrator username and password. |
 | View account | Enables or disables the view account and sets its password. |
 | LibreNMS | Enables monitoring, polling, syslog, and availability tests across protected networks. |
@@ -224,6 +217,26 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 
 | IMPORTANT | Apply with no changes must be idempotent: it verifies state without changing the functional result. If an error appears, do not retry blindly; read the message and system radiography. |
 | --- | --- |
+
+### Set up WireGuard for traDUKtor
+
+1. In **Configuration → WireGuard server**, enable the server and enter its private tunnel address with a subnet prefix and its UDP listen port. Choose a subnet that does not overlap existing networks. Select **Save server settings / prepare key** and copy the server public key.
+2. In traDUKtor, generate the client key pair and copy its public key. In **Tunnels → New tunnel**, choose **WireGuard**. Enter the server tunnel address and prefix as **Local network** and assign a unique client **Remote network** with a `/32` inside that subnet. Paste the client public key. If you use a preshared key, configure the same key on both sides.
+3. Save the tunnel. In **Configuration**, review **WireGuard Preview** and select **Apply** on the WireGuard card.
+4. On traDUKtor, enter the assigned tunnel IP, the server endpoint and UDP port, and the server public key. For a client behind NAT, a persistent keepalive of 25 seconds is a starting point.
+5. Confirm **Up** in **Dashboard** and **Tunnels**, then use **Diagnostics → Ping** to test the peer tunnel IP.
+
+### Carry Fácil IoT management over WireGuard
+
+1. Verify that the Fácil IoT MQTT TLS listener is reachable at the server-side tunnel address and that traDUKtor is enrolled with the configured Fácil IoT hostname.
+2. In traDUKtor, enable **Use VPN for Facil IoT MQTT management** and enter the reachable broker IP under **Facil IoT address inside the VPN**. Save the tunnel configuration.
+3. In traDUKtor **Dashboard → Mgmt & VPN**, confirm **Transport** shows WireGuard and the MQTT diagnostic reports **Authenticated and subscribed**. In Fácil IoT, verify **Management OK**. If you use the peer tunnel IP as **Management IP**, enter the address without the `/32` suffix and use **Check IP** to verify direct reachability.
+
+The MQTT channel continues to validate the configured broker TLS identity. With VPN transport selected, MQTT management waits for WireGuard to become available. The tunnel has its own address range and the default gateway continues to handle regular traffic.
+
+### Edit or remove a WireGuard peer
+
+In **Tunnels**, use **Edit** or **Delete** to update the inventory. Review **Preview** and select **Apply** on the WireGuard card to reconcile the running configuration. Then check the affected peer in **Dashboard** and confirm that the other peers are still reachable.
 
 ## Diagnostics
 
@@ -273,7 +286,7 @@ VPNdukevilla is a web control interface for inventorying, generating, applying, 
 
 3. Select Apply mode.
 
-4. Confirm on Overview that the mode and agent status are consistent.
+4. Confirm on Dashboard that the mode and agent status are consistent.
 
 | IMPORTANT | A new installation should remain in DRY RUN until it reaches its final location, receives its production addressing, and enters an approved migration window. |
 | --- | --- |
@@ -356,6 +369,10 @@ VPNdukevilla supports two signed update paths. Use the online path when the appl
 
 For the first field update, use a controlled maintenance window and retain administrative host access until verification is complete.
 
+### Release and Beta channels
+
+In **Maintenance → Software upgrade**, select **Release** for stable firmware or **Beta** for an authorized trial, then select **Check latest version**. Use the online upgrade flow for beta packages. The browser file upload accepts signed stable `.vpnduke` packages.
+
 ### Updating an offline appliance from the browser
 
 1. From an Internet-connected workstation, open the official DukeVilla firmware portal.
@@ -409,7 +426,7 @@ Version 1.0.4 can use **Check latest version** when Internet access is available
 
 | Frequency | Activity |
 | --- | --- |
-| Daily | Review Overview, Down tunnels, and recent events. |
+| Daily | Review Dashboard, Down tunnels, and recent events. |
 | When creating or editing | Save → Preview → Apply → Up → ping. |
 | Weekly | Export CSV if flapping occurs and review disk space and services. |
 | Monthly | Create a configuration backup and system radiography. |

@@ -4,7 +4,7 @@ import Link from '@docusaurus/Link';
 import styles from './index.module.css';
 
 const products = [
-  { name: 'VPNdukevilla', logo: '/img/dukevilla-docs-card.png', logoClass: 'vpn', text: 'Secure control plane for IPsec and VPN operations.', href: '/docs/vpndukevilla', status: 'Manual 1.0.4' },
+  { name: 'VPNdukevilla', logo: '/img/dukevilla-docs-card.png', logoClass: 'vpn', text: 'Secure control plane for IPsec and VPN operations.', href: '/docs/vpndukevilla', status: 'User manual' },
   { name: 'traDUKtor', logo: '/img/traduktor-logo.png', logoClass: 'traduktor', text: 'Protocol translation and DVRCP remote management of compatible access equipment.', href: '/docs/traduktor', status: 'Live operational manual' },
   { name: 'Fácil IoT', logo: '/img/facil-iot-logo.png', logoClass: 'faciliot', text: 'LoRaWAN/BLE operations, DVRCP device management and optional WiFi captive portals.', href: '/docs/facil-iot', status: 'Live operational manual' }
 ];
